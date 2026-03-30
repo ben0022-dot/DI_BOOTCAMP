@@ -1,0 +1,37 @@
+// 1. Prompt the user for words and split them into an array
+const userInput = prompt("Enter several words separated by commas (e.g., Hello, World, in, a, frame):");
+
+// .split(",") turns the string into an array. 
+// .map(word => word.trim()) ensures we remove accidental spaces around the commas.
+const words = userInput.split(",").map(word => word.trim());
+
+// 2. Find the length of the longest word
+let longestLength = 0;
+for (let word of words) {
+    if (word.length > longestLength) {
+        longestLength = word.length;
+    }
+}
+
+// 3. Define the frame width
+// We add 4 to the longest word length: 2 for the stars (*) and 2 for the spaces.
+const frameWidth = longestLength + 4;
+
+// 4. Create the top and bottom borders
+const border = "*".repeat(frameWidth);
+
+// 5. Build and display the frame
+console.log(border); // Top Border
+
+for (let word of words) {
+    // Determine how many spaces are needed after the word to reach the border
+    // Example: If frameWidth is 9 and word is "Hi" (2 letters), 
+    // we need enough spaces to keep the right-side stars aligned.
+    let spacesNeeded = longestLength - word.length;
+    let padding = " ".repeat(spacesNeeded);
+    
+    console.log(`* ${word}${padding} *`);
+}
+
+console.log(border); // Bottom Border
+
