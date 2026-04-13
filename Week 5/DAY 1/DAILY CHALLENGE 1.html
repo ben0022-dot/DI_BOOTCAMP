@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+ <link rel="stylesheet" href="style.css">
+   <style> 
+   /* style.css */
+:root {
+    --primary-color: #6366f1;
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #1e293b;
+    --result-bg: #e0e7ff; /* Light indigo/blue for the result box */
+}
+
+body {
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.converter-card {
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+}
+
+h2 {
+    color: var(--text-main);
+    margin-bottom: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Aligning the From - Switch - To row */
+.currency-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+select, input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+
+#switch-btn {
+    background: none;
+    border: 1px solid #cbd5e1;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+#switch-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+#convert-btn {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+#convert-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#result-container {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: var(--result-bg);
+    border-radius: 0.5rem;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#result-text {
+    margin: 0;
+    color: #4338ca;
+    font-size: 1.1rem;
+}
+</style>
+<body>
+
+<div class="converter-card">
+    <h2>Currency Converter</h2>
+    
+    <div class="input-group">
+        <input type="number" id="amount" value="1" min="1">
+        
+        <select id="from-currency"></select>
+        
+        <button id="switch-btn"><i class="fa-solid fa-right-left"></i></button>
+        
+        <select id="to-currency"></select>
+    </div>
+
+    <button id="convert-btn">Convert</button>
+    
+    <div id="result-container">
+        <p id="result-text">Select currencies to begin</p>
+    </div>
+    <div></div><class="input-group"></div>
+    <input type="number" id="amount" value="1">
+    <div class="currency-row">
+        <select id="from-currency"></select>
+        <button id="switch-btn">⇄</button>
+        <select id="to-currency"></select>
+    </div>
+</div>
+
+<script>
+    const apiKey = 'YOUR_API_KEY'; // Replace with your actual key
+const fromSelect = document.getElementById('from-currency');
+const toSelect = document.getElementById('to-currency');
+const amountInput = document.getElementById('amount');
+const convertBtn = document.getElementById('convert-btn');
+const resultText = document.getElementById('result-text');
+const switchBtn = document.getElementById('switch-btn');
+
+// --- Task 1: Fetch Supported Currencies ---
+async function loadCurrencies() {
+    const url = `https://v6.exchangerate-api.com/v6/${apiKey}/codes`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.result === "success") {
+            // data.supported_codes is an array of arrays: [ ["USD", "United States Dollar"], ... ]
+            data.supported_codes.forEach(([code, name]) => {
+                const option1 = new Option(`${code} - ${name}`, code);
+                const option2 = new Option(`${code} - ${name}`, code);
+                fromSelect.add(option1);
+                toSelect.add(option2);
+            });
+            
+            // Set defaults
+            fromSelect.value = "USD";
+            toSelect.value = "EUR";
+        }
+    } catch (error) {
+        console.error("Error loading currencies:", error);
+    }
+}
+
+// --- Task 2: Fetch Conversion Rate ---
+async function convertCurrency() {
+    const from = fromSelect.value;
+    const to = toSelect.value;
+    const amount = amountInput.value;
+    
+    if (amount === "" || amount <= 0) return;
+
+    resultText.innerText = "Converting...";
+
+    const url = `https://v6.exchangerate-api.com/v6/${apiKey}/pair/${from}/${to}/${amount}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.result === "success") {
+            const convertedAmount = data.conversion_result.toLocaleString();
+            resultText.innerHTML = `<strong>${amount} ${from}</strong> = <strong>${convertedAmount} ${to}</strong>`;
+        } else {
+            resultText.innerText = "Error fetching rate.";
+        }
+    } catch (error) {
+        resultText.innerText = "Connection error.";
+    }
+}
+
+// --- Bonus: Switch Button Logic ---
+switchBtn.addEventListener('click', () => {
+    const temp = fromSelect.value;
+    fromSelect.value = toSelect.value;
+    toSelect.value = temp;
+    convertCurrency(); // Re-calculate automatically
+});
+
+// Event Listeners
+convertBtn.addEventListener('click', convertCurrency);
+window.addEventListener('DOMContentLoaded', loadCurrencies);
+async function convertCurrency() {
+    const from = fromSelect.value;
+    const to = toSelect.value;
+    const amount = amountInput.value;
+    
+    if (amount === "" || amount <= 0) return;
+
+    // --- Start Loading State ---
+    convertBtn.disabled = true;
+    convertBtn.innerText = "Converting...";
+    resultText.innerText = "Fetching latest rates...";
+
+    const url = `https://v6.exchangerate-api.com/v6/${apiKey}/pair/${from}/${to}/${amount}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.result === "success") {
+            const convertedAmount = data.conversion_result.toLocaleString();
+            resultText.innerHTML = `<strong>${amount} ${from}</strong> = <strong>${convertedAmount} ${to}</strong>`;
+        } else {
+            resultText.innerText = "Error: API returned an issue.";
+        }
+    } catch (error) {
+        resultText.innerText = "Connection error. Please try again.";
+    } finally {
+        // --- End Loading State ---
+        convertBtn.disabled = false;
+        convertBtn.innerText = "Convert";
+    }
+}
+</script>
+</body>
+</html>
