@@ -1,0 +1,35 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #f7f7f7;
+}
+
+.recipe-app {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+#recipeEntryForm {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+#recipeEntryForm input,
+#recipeEntryForm textarea,
+#recipeEntryForm button {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.recipe-card {
+  background: white;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.recipe-card button {
+  margin-right: 8px;
+}
