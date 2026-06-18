@@ -1,0 +1,22 @@
+# Collaborative Storytelling App
+
+A full-stack web application for creating, sharing, and collaborating on stories with real-time editing, version control, and profile customization.
+
+## 🚀 Features
+
+### Core Features
+- **Authentication**: JWT-based authentication with secure password storage using bcrypt
+- **CRUD Operations**: Create, read, update, and delete stories
+- **Collaboration**: Add/remove contributors to stories
+- **Authorization**: Only authors and collaborators can edit; only authors can delete
+- **Responsive Design**: Mobile and desktop friendly with dark theme
+- **State Management**: Redux Toolkit for global state management
+- **Type Safety**: TypeScript throughout the entire project
+
+### Advanced Features (Planned)
+- Real-time editing with WebSocket
+- Version control for stories
+- Profile customization
+- Comment system
+
+## 📁 Project Structure
